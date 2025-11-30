@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Credentials - DO NOT INCLUDE IN CONTAINER
+credentials.json
+token.pickle
+*.pickle
+
+# Documentation
+*.md
+!requirements.txt
+docs/
+SETUP_GUIDE.md
+KAGGLE_SUBMISSION.md
+kaggle_submission/
+video_materials/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Deployment
+cloudbuild.yaml
+docker-compose.yml
+.dockerignore
+deploy-cloud-run.sh
+*.ps1

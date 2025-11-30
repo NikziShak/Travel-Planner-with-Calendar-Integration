@@ -1,0 +1,137 @@
+version: '3.8'
+
+services:
+  # Host Agent - Orchestrator
+  host-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: adk-host-agent
+    ports:
+      - "8000:8000"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    command: uvicorn agents.host_agent.__main__:app --host 0.0.0.0 --port 8000
+    networks:
+      - adk-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Flight Agent
+  flight-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: adk-flight-agent
+    ports:
+      - "8001:8001"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    command: uvicorn agents.flight_agent.__main__:app --host 0.0.0.0 --port 8001
+    networks:
+      - adk-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8001/')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Stay Agent
+  stay-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: adk-stay-agent
+    ports:
+      - "8002:8002"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    command: uvicorn agents.stay_agent.__main__:app --host 0.0.0.0 --port 8002
+    networks:
+      - adk-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8002/')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Activities Agent
+  activities-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: adk-activities-agent
+    ports:
+      - "8003:8003"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    command: uvicorn agents.activities_agent.__main__:app --host 0.0.0.0 --port 8003
+    networks:
+      - adk-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8003/')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Calendar Agent
+  calendar-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: adk-calendar-agent
+    ports:
+      - "8004:8004"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    command: uvicorn agents.calendar_agent.__main__:app --host 0.0.0.0 --port 8004
+    volumes:
+      # Mount credentials for Calendar API (optional)
+      - ./credentials.json:/app/credentials.json:ro
+      - calendar-tokens:/app/tokens
+    networks:
+      - adk-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8004/')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Streamlit UI
+  ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: adk-travel-ui
+    ports:
+      - "8501:8501"
+    command: streamlit run travel_ui.py --server.port 8501 --server.address 0.0.0.0
+    depends_on:
+      - host-agent
+      - flight-agent
+      - stay-agent
+      - activities-agent
+      - calendar-agent
+    networks:
+      - adk-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  adk-network:
+    driver: bridge
+
+volumes:
+  calendar-tokens:

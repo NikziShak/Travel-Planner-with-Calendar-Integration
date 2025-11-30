@@ -60,8 +60,8 @@ ADK_demo/
 
 1. Clone the Repo
 ```
-git clone https://github.com/NikitSharma/Travel-Planner-with-Calendar-Integration.git
-cd Travel-Planner-with-Calendar-Integration
+git clone https://github.com/NikitSharma/Google-Agent-Development-Kit-Demo.git
+cd Google-Agent-Development-Kit-Demo
 ```
 2. Setup Environment
 3. 
@@ -137,8 +137,112 @@ The travel planner can automatically add your travel plans to Google Calendar! T
 - **Authentication error**: Delete `token.pickle` and re-authenticate
 - **Events not created**: Check that the calendar agent is running on port 8004
 
+## ☁️ Cloud Deployment
+
+### Deploy to Google Cloud Run
+
+The application is fully containerized and ready to deploy to Google Cloud Run. This allows you to run the service in the cloud with automatic scaling.
+
+#### Prerequisites
+
+1. **Google Cloud Account** with billing enabled
+2. **gcloud CLI** installed and configured
+   ```bash
+   # Install: https://cloud.google.com/sdk/docs/install
+   gcloud auth login
+   gcloud config set project YOUR_PROJECT_ID
+   ```
+3. **Docker** installed locally
+4. **GEMINI_API_KEY** environment variable set
+
+#### Quick Deploy (Windows)
+
+```powershell
+# Set your Gemini API key
+$env:GEMINI_API_KEY = "your-api-key-here"
+
+# Run the deployment script
+.\deploy-cloud-run.ps1
+```
+
+#### Quick Deploy (Linux/Mac)
+
+```bash
+# Set your Gemini API key
+export GEMINI_API_KEY="your-api-key-here"
+
+# Make script executable and run
+chmod +x deploy-cloud-run.sh
+./deploy-cloud-run.sh
+```
+
+#### Manual Deployment Steps
+
+1. **Build the Docker image**:
+   ```bash
+   docker build -t gcr.io/YOUR_PROJECT_ID/adk-travel-planner:latest .
+   ```
+
+2. **Push to Google Container Registry**:
+   ```bash
+   gcloud auth configure-docker
+   docker push gcr.io/YOUR_PROJECT_ID/adk-travel-planner:latest
+   ```
+
+3. **Deploy to Cloud Run**:
+   ```bash
+   gcloud run deploy adk-travel-planner \
+     --image=gcr.io/YOUR_PROJECT_ID/adk-travel-planner:latest \
+     --platform=managed \
+     --region=us-central1 \
+     --allow-unauthenticated \
+     --port=8501 \
+     --memory=2Gi \
+     --cpu=2 \
+     --set-env-vars="GEMINI_API_KEY=your-api-key"
+   ```
+
+4. **Access your deployed app**:
+   The command will output a URL like: `https://adk-travel-planner-xxxxx.run.app`
+
+#### Docker Compose (Local Testing)
+
+Test the multi-container setup locally:
+
+```bash
+# Start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
+```
+
+#### Cloud Build (CI/CD)
+
+For automated deployments via Cloud Build:
+
+```bash
+gcloud builds submit --config cloudbuild.yaml \
+  --substitutions=_GEMINI_API_KEY="your-api-key"
+```
+
+#### Cost Estimates
+
+- **Cloud Run Free Tier**: 2 million requests/month free
+- **Development/Testing**: Typically $0-5/month
+- **Production (moderate traffic)**: $10-50/month depending on usage
+
+#### Troubleshooting Cloud Deployment
+
+- **Build fails**: Check `requirements.txt` and Dockerfile syntax
+- **503 errors**: Check health endpoint and startup time
+- **Environment variables**: Ensure GEMINI_API_KEY is set correctly
+- **Memory issues**: Increase memory allocation in deploy command
+
 ## 🤖 Contributing
 
 Contributions are welcome! Please open issues or submit PRs with improvements.
-
 
