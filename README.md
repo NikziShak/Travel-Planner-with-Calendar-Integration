@@ -60,8 +60,8 @@ ADK_demo/
 
 1. Clone the Repo
 ```
-git clone https://github.com/NikitSharma/Google-Agent-Development-Kit-Demo.git
-cd Google-Agent-Development-Kit-Demo
+git clone https://github.com/NikitSharma/Travel-Planner-with-Calendar-Integration.git
+cd Travel-Planner-with-Calendar-Integration
 ```
 2. Setup Environment
 3. 
@@ -140,4 +140,5 @@ The travel planner can automatically add your travel plans to Google Calendar! T
 ## 🤖 Contributing
 
 Contributions are welcome! Please open issues or submit PRs with improvements.
+
 
